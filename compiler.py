@@ -16,7 +16,6 @@ class _Operation:
     TG = 10
     CTG = 11
     SQRT = 12
-    MINUS = 13
 
 class _Part:
     def __init__(self, val, oper, is_x):
@@ -31,13 +30,13 @@ class Function:
         self.__f = []
 
     def __is_operator(self, o):
-        return o in ['+', '-', '*', '/', '^']
+        return o in  '+-*/^'
 
     def __get_func(self, func):
         func_map = {
             "cos": _Operation.COS, "ln": _Operation.LN, "lb": _Operation.LB,
             "lg": _Operation.LG, "tg": _Operation.TG, "ctg": _Operation.CTG,
-            "sin": _Operation.SIN, "sqrt": _Operation.SQRT, "-": _Operation.MINUS
+            "sin": _Operation.SIN, "sqrt": _Operation.SQRT
         }
         return func_map.get(func, _Operation.NON)
 
@@ -82,8 +81,6 @@ class Function:
                 return cos(a) / sin(a)
             elif oper == _Operation.SQRT:
                 return sqrt(a)
-            elif oper == _Operation.MINUS:
-                return -a
             return float('nan')
         except:
             return float('nan')
@@ -172,12 +169,26 @@ class Function:
         except:
             return float('nan')
 
+    def __make_beautiful(self, s):
+        s = "(" + s + ")"
+        s = s.replace(" ", "")
+        s = s.replace("e", str(e))
+        s = s.replace("pi", str(pi))
+        temp = ""
+        for i in range(len(s)):
+            if s[i] in '-+' and s[i - 1] in '(+-*/^':
+                temp += "0-"
+            else:
+                temp += s[i]
+        s = temp
+        return s
+
     def set_function(self, s):
         if not s:
             self.function = None
             return False
         self.__f = []
-        if self.__convert(f"({s.replace(" ", "")})"):
+        if self.__convert(self.__make_beautiful(s)):
             self.function = s
             return True
         return False
