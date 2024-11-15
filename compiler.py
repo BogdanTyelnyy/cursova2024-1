@@ -172,15 +172,16 @@ class Function:
     def __make_beautiful(self, s):
         s = "(" + s + ")"
         s = s.replace(" ", "")
-        s = s.replace("e", str(e))
-        s = s.replace("pi", str(pi))
         temp = ""
         for i in range(len(s)):
             if s[i] in '-+' and s[i - 1] in '(+-*/^':
-                temp += "0-"
-            else:
-                temp += s[i]
+                temp += "0"
+            if i > 0 and s[i] in '(xcltsep' and s[i - 1] in '0123456789)x':
+                temp += "*"
+            temp += s[i]
         s = temp
+        s = s.replace("e", str(e))
+        s = s.replace("pi", str(pi))
         return s
 
     def set_function(self, s):
@@ -188,9 +189,10 @@ class Function:
             self.function = None
             return False
         self.__f = []
-        if self.__convert(self.__make_beautiful(s)):
-            self.function = s
+        self.function = self.__make_beautiful(s)
+        if self.__convert(self.function):
             return True
+        self.function = None
         return False
 
     def __call__(self, value):
