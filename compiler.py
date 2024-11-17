@@ -1,4 +1,4 @@
-from math import sin, cos, log, log10, tan, sqrt, pow, e, pi
+from math import sin, cos, log, log10, tan, sqrt, e, pi
 from collections import deque
 
 class _Operation:
@@ -58,7 +58,7 @@ class Function:
             elif oper == _Operation.DIV:
                 return a / b
             elif oper == _Operation.POW:
-                return pow(a, b)
+                return a**b
             return float('nan')
         except:
             return float('nan')
