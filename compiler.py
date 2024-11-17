@@ -38,7 +38,10 @@ class Function:
             "lg": _Operation.LG, "tg": _Operation.TG, "ctg": _Operation.CTG,
             "sin": _Operation.SIN, "sqrt": _Operation.SQRT
         }
-        return func_map.get(func, _Operation.NON)
+        res = func_map.get(func, _Operation.NON)
+        if res == _Operation.NON:
+            raise ValueError(f'Використано функцію, що не підтримується - {func}')
+        return res
 
     def __get_priority(self, o):
         priority_map = {
@@ -59,7 +62,6 @@ class Function:
                 return a / b
             elif oper == _Operation.POW:
                 return a**b
-            return float('nan')
         except:
             return float('nan')
 
@@ -81,11 +83,10 @@ class Function:
                 return cos(a) / sin(a)
             elif oper == _Operation.SQRT:
                 return sqrt(a)
-            return float('nan')
         except:
             return float('nan')
 
-    def __convert(self, s):
+    def __parce(self, s):
         try:
             self.__f.clear()
             operation_mod = 100
@@ -136,10 +137,8 @@ class Function:
             while operators:
                 oper = operators.pop()[0] % operation_mod
                 self.__f.append(_Part(0, oper, False))
-
-            return True
-        except:
-            return False
+        except Exception as e:
+            raise ValueError(e)
 
     def __get_value(self, value):
         try:
@@ -190,10 +189,11 @@ class Function:
             return False
         self.__f = []
         self.function = self.__make_beautiful(s)
-        if self.__convert(self.function):
-            return True
-        self.function = None
-        return False
+        try:
+            self.__parce(self.function)
+        except Exception as e:
+            self.function = None
+            raise ValueError(e)
 
     def __call__(self, value):
         if self.function == None:

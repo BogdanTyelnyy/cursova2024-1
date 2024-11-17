@@ -1,15 +1,13 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-# from tkinter import ttk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from compiler import Function
 
 def plot_graph():
     try:
-        if not f.set_function(entry_f.get()):
-            raise ValueError("Некоректний графік.")
-
+        f.set_function(entry_f.get())
+        
         a = float(entry_a.get())
         b = float(entry_b.get())
         h = float(entry_h.get())
