@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
+# from tkinter import ttk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from compiler import Function
@@ -57,8 +58,7 @@ x, y = [], []
 
 f = Function()
 
-main_window = tk.Tk()
-main_window.title("?????")
+main_window = ttk.Window(title="?????")
 
 controls = ttk.Frame(main_window)
 controls.pack(padx=5, pady=5)
@@ -88,7 +88,7 @@ ttk.Button(controls, text="Побудувати графік", command=plot_grap
 button_save = ttk.Button(controls, text="Зберегти табуляцію", command=save, state=tk.DISABLED)
 button_save.grid(row=4, column=1, pady=10)
 
-plot = tk.Frame(main_window)
+plot = ttk.Frame(main_window)
 plot.pack()
 
 fig = Figure()
