@@ -40,7 +40,7 @@ def plot_graph():
         button_save.config(state=tk.ACTIVE)
         
     except Exception as e:
-        tk.messagebox.showerror("Помилка", f"Не вдалося побудувати графік: {e}")
+        tk.messagebox.showerror("Помилка", f"Не вдалося побудувати графік. {e}")
         button_save.config(state=tk.DISABLED)
 
 def save():
