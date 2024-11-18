@@ -8,6 +8,8 @@ def plot_graph():
     try:
         f.set_function(entry_f.get())
         
+        # print(f.get_rpn())
+
         a = float(entry_a.get())
         b = float(entry_b.get())
         h = float(entry_h.get())
