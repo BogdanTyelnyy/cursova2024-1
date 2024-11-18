@@ -92,17 +92,18 @@ class Function:
             operation_mod = 100
             operators = deque()
             brackets = deque()
+            func = deque()
             cur_coef = 1e6
             cur_priority = 0
             temp = ""
-            func = ""
+            # func = ""
             ind = 0
             for i, char in enumerate(s):
                 if char == '(':
                     cur_coef -= operation_mod
                     brackets.append(i)
                     if temp:
-                        func = temp
+                        func.append(temp)
                         temp = ""
                 elif char == ')':
                     cur_coef += operation_mod
@@ -115,9 +116,8 @@ class Function:
                     while operators and brackets[-1] < operators[-1][1]:
                         oper = operators.pop()[0] % operation_mod
                         self.__f.append(_Part(0, oper, False))
-                    if func:
-                        self.__f.append(_Part(0, self.__get_func(func), False))
-                        func = ""
+                    while func:
+                        self.__f.append(_Part(0, self.__get_func(func.pop()), False))
                     brackets.pop()
                 elif self.__is_operator(char):
                     if temp:
