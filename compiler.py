@@ -152,12 +152,9 @@ class Function:
                     operators.append((cur_priority, i))
                 else:
                     temp += char
-
-            while operators:
-                oper = operators.pop()[0] % operation_mod
-                self.__f.append(self._Part(0, oper, False))
-        except Exception as e:
-            raise ValueError(e)
+            
+        except:
+            raise self._Error.BADFUNC
 
     def __get_value(self, value):
         try:
@@ -208,18 +205,15 @@ class Function:
         return s
 
     def set_function(self, s):
-        if not s:
-            self.function = None
-            return False
         self.__f = []
         self.function = self.__make_beautiful(s)
         try:
             self.__parce(self.function)
-        except Exception as e:
+        except self._Error as e:
             self.function = None
-            raise ValueError(e)
-
+            raise e
+    
     def __call__(self, value):
         if self.function == None:
-            return float('nan')
+            raise self._Error.BADFUNC
         return self.__get_value(value)
