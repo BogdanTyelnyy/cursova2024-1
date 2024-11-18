@@ -3,6 +3,7 @@ from collections import deque
 
 class Function:
     class _Operation:
+        _SAMEPRIORITYRANGE = 10
         NON = 100
         ADD = 86
         DIF = 85
@@ -17,12 +18,6 @@ class Function:
         TG = 10
         CTG = 11
         SQRT = 12
-    
-    class _Part:
-        def __init__(self, val, oper, is_x):
-            self.val = val
-            self.oper = oper
-            self.is_x = is_x
 
     class _Error(Exception):
         FUNC = f'Викликається функція без аргументів.'
@@ -61,14 +56,14 @@ class Function:
     def __is_operator(self, o):
         return o in  '+-*/^'
 
+    def __less_priority(self, a, b):
+        return a < b - self._Operation._SAMEPRIORITYRANGE
+
     def __get_func(self, func):
         res = self.func_map.get(func, self._Operation.NON)
         if res == self._Operation.NON:
             raise ValueError(f'Використано функцію, що не підтримується - {func}')
         return res
-
-    def __get_priority(self, o):
-        return self.func_map.get(o, self._Operation.NON)
 
     def __make_binar_operation(self, a, oper, b):
         try:
@@ -109,50 +104,40 @@ class Function:
     def __parce(self, s):
         try:
             self.__f.clear()
-            operation_mod = 100
             operators = deque()
-            brackets = deque()
             func = deque()
-            cur_coef = 1e6
-            cur_priority = 0
             temp = ""
-            ind = 0
-            for i, char in enumerate(s):
+            for char in s:
                 if char == '(':
-                    cur_coef -= operation_mod
-                    brackets.append(i)
+                    operators.append('(')
                     if temp:
-                        func.append(temp)
+                        func.append(self.__get_func(temp))
                         temp = ""
                 elif char == ')':
-                    cur_coef += operation_mod
                     if temp:
-                        if temp != "x":
-                            self.__f.append(self._Part(float(temp), self._Operation.NON, False))
+                        if temp == "x":
+                            self.__f.append(temp)
                         else:
-                            self.__f.append(self._Part(0, self._Operation.NON, True))
+                            self.__f.append(float(temp))
                         temp = ""
-                    while operators and brackets[-1] < operators[-1][1]:
-                        oper = operators.pop()[0] % operation_mod
-                        self.__f.append(self._Part(0, oper, False))
+                    while operators and operators[-1] != '(':
+                        self.__f.append(operators.pop())
                     if func:
-                        self.__f.append(self._Part(0, self.__get_func(func.pop()), False))
-                    brackets.pop()
+                        self.__f.append(func.pop())
+                    operators.pop()
                 elif self.__is_operator(char):
                     if temp:
-                        if temp != "x":
-                            self.__f.append(self._Part(float(temp), self._Operation.NON, False))
+                        if temp == "x":
+                            self.__f.append(temp)
                         else:
-                            self.__f.append(self._Part(0, self._Operation.NON, True))
+                            self.__f.append(float(temp))
                         temp = ""
-                    cur_priority = self.__get_priority(char) + cur_coef
-                    while operators and operators[-1][0] - operation_mod / 10 <= cur_priority:
-                        oper = operators.pop()[0] % operation_mod
-                        self.__f.append(self._Part(0, oper, False))
-                    operators.append((cur_priority, i))
+                    cur_operator = self.__get_func(char)
+                    while operators and operators[-1] != '(' and self.__less_priority(operators[-1], cur_operator):
+                        self.__f.append(operators.pop())
+                    operators.append(cur_operator)
                 else:
                     temp += char
-            
         except:
             raise self._Error.BADFUNC
 
@@ -160,26 +145,19 @@ class Function:
         try:
             val_stack = deque()
             for cur in self.__f:
-                if cur.is_x:
+                if cur == "x":
                     val_stack.append(value)
-                elif cur.oper == self._Operation.NON:
-                    val_stack.append(cur.val)
-                elif cur.oper < 15:
+                elif type(cur) is float:
+                    val_stack.append(cur)
+                elif cur < 15:
                     if not val_stack:
                         raise self._Error(self._Error.FUNC)
-                    temp = val_stack.pop()
-                    temp = self.__make_unar_operation(temp, cur.oper)
-                    if temp != temp:
-                        return float('nan')
-                    val_stack.append(temp)
+                    val_stack.append(self.__make_unar_operation(val_stack.pop(), cur))
                 else:
-                    if not val_stack:
+                    if not len(val_stack) > 1:
                         raise self._Error(self._Error.BINAROPERATION)
-                    temp = val_stack.pop()
-                    if not val_stack:
-                        raise self._Error(self._Error.BINAROPERATION)
-                    temp = self.__make_binar_operation(val_stack.pop(), cur.oper, temp)
-                    val_stack.append(temp)
+                    b, a = val_stack.pop(), val_stack.pop()
+                    val_stack.append(self.__make_binar_operation(a, cur, b))
             if val_stack:
                 return val_stack.pop()
             raise self._Error(self._Error.BADFUNC)

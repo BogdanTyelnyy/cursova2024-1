@@ -58,28 +58,29 @@ x, y = [], []
 
 f = Function()
 
-main_window = ttk.Window(title="?????")
+main_window = ttk.Window(title="?????", resizable=(False, False), position=(100, 100))
+
 
 controls = ttk.Frame(main_window)
 controls.pack(padx=5, pady=5)
 
 ttk.Label(controls, text="Функція y = f(x):").grid(row=0, column=0, padx=5, pady=5)
-entry_f = ttk.Entry(controls)
+entry_f = ttk.Entry(controls, width=70)
 entry_f.insert(0, "sin(x)")
 entry_f.grid(row=0, column=1, padx=5, pady=5)
 
 ttk.Label(controls, text="Ліва межа:").grid(row=1, column=0, padx=5, pady=5)
-entry_a = ttk.Entry(controls)
+entry_a = ttk.Entry(controls, width=70)
 entry_a.insert(0, "-10")
 entry_a.grid(row=1, column=1, padx=5, pady=5)
 
 ttk.Label(controls, text="Права межа:").grid(row=2, column=0, padx=5, pady=5)
-entry_b = ttk.Entry(controls)
+entry_b = ttk.Entry(controls, width=70)
 entry_b.insert(0, "10")
 entry_b.grid(row=2, column=1, padx=5, pady=5)
 
 ttk.Label(controls, text="Крок (h):").grid(row=3, column=0, padx=5, pady=5)
-entry_h = ttk.Entry(controls)
+entry_h = ttk.Entry(controls, width=70)
 entry_h.insert(0, "0.1")
 entry_h.grid(row=3, column=1, padx=5, pady=5)
 
