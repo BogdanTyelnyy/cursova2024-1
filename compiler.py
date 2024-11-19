@@ -139,7 +139,7 @@ class Function:
                 else:
                     temp += char
         except:
-            raise self._Error.BADFUNC
+            raise self._Error(self._Error.BADFUNC)
 
     def __get_value(self, value):
         try:
