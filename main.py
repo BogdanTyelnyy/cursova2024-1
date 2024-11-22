@@ -58,7 +58,7 @@ x, y = [], []
 
 f = Function()
 
-main_window = ttk.Window(title="?????", resizable=(False, False), position=(100, 100))
+main_window = ttk.Window(title="Побудова графіків функцій", resizable=(False, False), position=(100, 100))
 
 
 controls = ttk.Frame(main_window)
