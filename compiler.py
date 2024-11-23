@@ -3,8 +3,8 @@ from collections import deque
 
 class Function:
     class _Operation:
-        _SAMEPRIORITYRANGE = 10
         NON = 100
+        _SAMEPRIORITYRANGE = 10
         ADD = 86
         DIF = 85
         MULT = 66
@@ -18,6 +18,7 @@ class Function:
         TG = 10
         CTG = 11
         SQRT = 12
+        RETURNER = 13
 
     class _Error(Exception):
         FUNC = f'Викликається функція без аргументів.'
@@ -27,7 +28,7 @@ class Function:
     oper_map = {
         _Operation.COS : "cos", _Operation.LN : "ln", _Operation.LB : "lb",
         _Operation.LG : "lg", _Operation.TG : "tg", _Operation.CTG : "ctg",
-        _Operation.SIN : "sin", _Operation.SQRT : "sqrt", 
+        _Operation.SIN : "sin", _Operation.SQRT : "sqrt", _Operation.RETURNER : "",
         _Operation.ADD : "+", _Operation.DIF : "-", 
         _Operation.DIV : "/", _Operation.MULT : "*", _Operation.POW : "^"
     }
@@ -35,7 +36,7 @@ class Function:
     func_map = {
         "cos": _Operation.COS, "ln": _Operation.LN, "lb": _Operation.LB,
         "lg": _Operation.LG, "tg": _Operation.TG, "ctg": _Operation.CTG,
-        "sin": _Operation.SIN, "sqrt": _Operation.SQRT,
+        "sin": _Operation.SIN, "sqrt": _Operation.SQRT, "": _Operation.RETURNER,
         '+': _Operation.ADD, '-': _Operation.DIF,
         '*': _Operation.MULT, '/': _Operation.DIV, '^': _Operation.POW
     }
@@ -44,20 +45,22 @@ class Function:
 
     def get_rpn(self):
         if self.function:
-            s = ""
+            s = ''
             for el in self.__f:
-                if el.is_x:
-                    s += 'x '
-                elif el.oper != self._Operation.NON:
-                    s += self.oper_map.get(el.oper) + ' '
+                if type(el) is str:
+                    s += el
+                elif type(el) is float:
+                    s += str(el)
                 else:
-                    s += str(el.val) + ' '
+                    s += self.oper_map.get(el)
+                s += ' '
             return s
+
     def __is_operator(self, o):
         return o in  '+-*/^'
 
-    def __less_priority(self, a, b):
-        return a < b - self._Operation._SAMEPRIORITYRANGE
+    def __less_or_same_priority(self, a, b):
+        return a < b + self._Operation._SAMEPRIORITYRANGE
 
     def __get_func(self, func):
         res = self.func_map.get(func, self._Operation.NON)
@@ -110,9 +113,8 @@ class Function:
             for char in s:
                 if char == '(':
                     operators.append('(')
-                    if temp:
-                        func.append(self.__get_func(temp))
-                        temp = ""
+                    func.append(self.__get_func(temp))
+                    temp = ""
                 elif char == ')':
                     if temp:
                         if temp == "x":
@@ -122,8 +124,10 @@ class Function:
                         temp = ""
                     while operators and operators[-1] != '(':
                         self.__f.append(operators.pop())
-                    if func:
+                    if func[-1] != self._Operation.RETURNER:
                         self.__f.append(func.pop())
+                    else:
+                        func.pop()
                     operators.pop()
                 elif self.__is_operator(char):
                     if temp:
@@ -133,7 +137,7 @@ class Function:
                             self.__f.append(float(temp))
                         temp = ""
                     cur_operator = self.__get_func(char)
-                    while operators and operators[-1] != '(' and self.__less_priority(operators[-1], cur_operator):
+                    while operators and operators[-1] != '(' and self.__less_or_same_priority(operators[-1], cur_operator):
                         self.__f.append(operators.pop())
                     operators.append(cur_operator)
                 else:
