@@ -176,7 +176,7 @@ class Function:
         s = s.replace(" ", "")
         temp = ""
         for i in range(len(s)):
-            if s[i] in '-+' and s[i - 1] in '(+-*/^':
+            if s[i] in '-+' and s[i - 1] in '(':
                 temp += "0"
             if i > 0 and s[i] in '(xcltsep' and s[i - 1] in '0123456789)x':
                 temp += "*"
